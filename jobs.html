@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Вакансії — FindYourJob</title>
+    <meta
+      name="description"
+      content="Шукайте вакансії та фільтруйте пропозиції за посадою, регіоном і типом зайнятості."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a class="brand" href="index.html">
+          <svg class="brand__mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle cx="10.8" cy="10.8" r="6.6" />
+            <path d="m15.7 15.7 5 5" />
+          </svg>
+          FindYourJob
+        </a>
+        <nav aria-label="Основна навігація">
+          <ul class="nav-list" role="list">
+            <li><a href="index.html">Головна</a></li>
+            <li><a href="jobs.html" aria-current="page">Вакансії</a></li>
+            <li>
+              <a href="jobs.html?saved=1" data-nav="saved"
+                >Збережені <span class="count" id="saved-count" hidden>0</span></a
+              >
+            </li>
+          </ul>
+        </nav>
+        <button type="button" id="theme-toggle" class="btn btn--ghost" aria-pressed="false">
+          Темна тема
+        </button>
+      </div>
+    </header>
+    <main id="main" class="container section" tabindex="-1">
+      <h1 id="page-title">Каталог вакансій</h1>
+
+      <div class="catalog">
+        <details id="filters-panel" class="filters">
+          <summary>Пошук і фільтри</summary>
+          <form id="filters-form" class="filters__form" role="search" aria-label="Фільтри вакансій">
+            <div class="field">
+              <label for="q">Пошук</label>
+              <input
+                id="q"
+                name="q"
+                type="search"
+                placeholder="Посада, технологія, компанія"
+                autocomplete="off"
+                aria-describedby="q-hint"
+              />
+              <p id="q-hint" class="field__hint">Усі слова мають знайтися у вакансії.</p>
+            </div>
+            <fieldset class="field" aria-describedby="geo-hint">
+              <legend>Регіон</legend>
+              <label class="choice"
+                ><input type="radio" name="geo" value="all" checked /> Усі регіони</label
+              >
+              <label class="choice"
+                ><input type="radio" name="geo" value="ua" /> Україна (Remote)</label
+              >
+              <label class="choice"
+                ><input type="radio" name="geo" value="europe" /> Європа / EMEA</label
+              >
+              <label class="choice"
+                ><input type="radio" name="geo" value="north-america" /> Північна Америка /
+                США</label
+              >
+              <p id="geo-hint" class="field__hint">
+                Підказка: шукати за конкретною країною чи містом можна також через текстове поле
+                пошуку
+              </p>
+            </fieldset>
+            <div class="field">
+              <label for="level">Рівень</label>
+              <select id="level" name="level">
+                <option value="">Будь-який рівень</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="type">Тип зайнятості</label>
+              <select id="type" name="type">
+                <option value="">Будь-який тип</option>
+              </select>
+            </div>
+            <div class="field filters__toggles">
+              <label class="choice"
+                ><input id="salary-only" type="checkbox" name="salary" /> Лише із вказаною
+                зарплатою</label
+              >
+              <label class="choice"
+                ><input id="saved-only" type="checkbox" name="saved" /> Лише збережені</label
+              >
+            </div>
+            <div class="field">
+              <label for="sort">Сортувати за</label>
+              <select id="sort" name="sort"></select>
+            </div>
+            <button id="reset" type="button" class="btn">Скинути фільтри</button>
+          </form>
+        </details>
+
+        <section aria-labelledby="results-title">
+          <h2 id="results-title" class="visually-hidden">Результати пошуку</h2>
+          <p id="results-status" class="results-status" role="status" aria-live="polite"></p>
+          <div id="results" class="card-grid" tabindex="-1" aria-busy="true"></div>
+          <nav id="pager" aria-label="Пагінація">
+  <button type="button" disabled>Попередня</button>
+  <span>Сторінка 1 з 1</span>
+  <button type="button" disabled>Наступна</button>
+</nav>
+          <p id="data-note" class="data-note"></p>
+        </section>
+      </div>
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <p>
+          Дані вакансій надає
+          <a href="https://jobicy.com" target="_blank" rel="noopener noreferrer"
+            >Jobicy<span class="visually-hidden"> (відкриється в новій вкладці)</span></a
+          >. Кожна вакансія має посилання на оригінал.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
