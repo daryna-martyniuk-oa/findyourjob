@@ -8,7 +8,7 @@
       name="description"
       content="FindYourJob — сайт для пошуку роботи, який зараз у розробці. Переглядайте віддалені IT-вакансії."
     />
-    <meta name="color-scheme" content="light dark"/>
+    <meta name="color-scheme" content="light dark" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="uk_UA" />
     <meta property="og:title" content="FindYourJob — пошук роботи" />
@@ -19,11 +19,19 @@
 
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./src/styles/main.css" />
+    <script>
+      try {
+        var saved = localStorage.getItem('findyourjob:theme');
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.dataset.theme = saved;
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <header class="site-header">
       <div class="container site-header__inner">
-         <a class="brand" href="index.html">
+        <a class="brand" href="index.html">
           <svg class="brand__mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <circle cx="10.8" cy="10.8" r="6.6" />
             <path d="m15.7 15.7 5 5" />
@@ -41,7 +49,9 @@
             </li>
           </ul>
         </nav>
-        <button type="button" id="theme-toggle" class="btn btn--ghost" aria-pressed="false">Темна тема</button>
+        <button type="button" id="theme-toggle" class="btn btn--ghost" aria-pressed="false">
+          Темна тема
+        </button>
       </div>
     </header>
 
@@ -88,14 +98,25 @@
             <div class="joby-card__top">
               <div class="joby-card__identity">
                 <span class="joby-card__avatar" aria-hidden="true">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="joby-icon">
-                    <path d="M12 8V4H8"/>
-                    <rect width="16" height="12" x="4" y="8" rx="2"/>
-                    <path d="M2 14h2"/>
-                    <path d="M20 14h2"/>
-                    <path d="M9 12v1.5"/>  
-                    <path d="M15 12v1.5"/>
-                    <path d="M10 17q2 1.5 4 0"/> 
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="joby-icon"
+                  >
+                    <path d="M12 8V4H8" />
+                    <rect width="16" height="12" x="4" y="8" rx="2" />
+                    <path d="M2 14h2" />
+                    <path d="M20 14h2" />
+                    <path d="M9 12v1.5" />
+                    <path d="M15 12v1.5" />
+                    <path d="M10 17q2 1.5 4 0" />
                   </svg>
                 </span>
                 <span>
@@ -208,5 +229,6 @@
         </p>
       </div>
     </footer>
+    <script type="module" src="./src/entries/home.js"></script>
   </body>
 </html>

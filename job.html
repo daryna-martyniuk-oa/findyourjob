@@ -13,6 +13,14 @@
 
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./src/styles/main.css" />
+    <script>
+      try {
+        var saved = localStorage.getItem('findyourjob:theme');
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.dataset.theme = saved;
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Перейти до основного вмісту</a>
@@ -127,5 +135,6 @@
         </p>
       </div>
     </footer>
+    <script type="module" src="./src/entries/job.js"></script>
   </body>
 </html>
