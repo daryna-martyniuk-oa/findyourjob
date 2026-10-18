@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Вакансія — FindYourJob</title>
     <meta name="description" content="Детальна інформація про вакансію." />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./src/styles/main.css" />
   </head>
   <body>
     <header class="site-header">
@@ -34,16 +35,82 @@
         </button>
       </div>
     </header>
-    <main id="main" class="container section" tabindex="-1">
+
+    <main id="main" class="container section">
       <nav class="breadcrumb" aria-label="Навігаційний ланцюжок">
         <ol role="list">
           <li><a href="index.html">Головна</a></li>
           <li><a href="jobs.html">Вакансії</a></li>
-          <li aria-current="page"><span id="crumb-current">Вакансія</span></li>
+          <li><span>Senior TypeScript Engineer</span></li>
         </ol>
       </nav>
-      <div id="job-root" aria-live="polite" aria-busy="true"></div>
+
+      <article class="job-details" aria-labelledby="job-title">
+        <header class="job-details__header">
+          <span class="job-card__logo" aria-hidden="true">GI</span>
+          <div>
+            <h1 id="job-title">Senior TypeScript Engineer</h1>
+            <p class="job-card__company">Global IT Solutions</p>
+          </div>
+        </header>
+
+        <ul class="badges" role="list">
+          <li class="badge">Звідусіль</li>
+          <li class="badge">Full-Time</li>
+          <li class="badge">Senior</li>
+        </ul>
+
+        <dl class="facts">
+          <div>
+            <dt>Регіон</dt>
+            <dd>Remote (Worldwide)</dd>
+          </div>
+          <div>
+            <dt>Тип зайнятості</dt>
+            <dd>Full-Time</dd>
+          </div>
+          <div>
+            <dt>Рівень</dt>
+            <dd>Senior</dd>
+          </div>
+          <div>
+            <dt>Зарплата</dt>
+            <dd>$4 000 – $6 000 / міс.</dd>
+          </div>
+          <div>
+            <dt>Опубліковано</dt>
+            <dd><time datetime="2026-10-14">14 жовтня 2026 (3 дні тому)</time></dd>
+          </div>
+        </dl>
+
+        <div class="job-details__actions">
+          <a class="btn btn--primary" href="https://jobicy.com">Відкрити вакансію на Jobicy</a>
+          <button
+            type="button"
+            class="btn btn--save"
+            aria-pressed="false"
+            aria-label="Зберегти вакансію: Senior TypeScript Engineer"
+          >
+            <span class="btn__icon" aria-hidden="true"></span>Зберегти
+          </button>
+        </div>
+
+        <h2 class="section-title">Опис вакансії</h2>
+        <div class="prose">
+          <p>Ми шукаємо досвідченого розробника для створення високонавантажених сервісів.</p>
+          <ul>
+            <li>Глибоке знання TypeScript і сучасного JavaScript (ES2015+).</li>
+            <li>Досвід із Vite, REST API та CSS Cascade Layers.</li>
+          </ul>
+        </div>
+
+        <p class="source-note">
+          Джерело: <a href="https://jobicy.com">Jobicy</a>. Подати заявку можна лише на сторінці
+          оригінальної вакансії.
+        </p>
+      </article>
     </main>
+
     <footer class="site-footer">
       <div class="container">
         <p>

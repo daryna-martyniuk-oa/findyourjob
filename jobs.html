@@ -8,8 +8,9 @@
       name="description"
       content="Шукайте вакансії та фільтруйте пропозиції за посадою, регіоном і типом зайнятості."
     />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./src/styles/main.css" />
   </head>
   <body>
     <header class="site-header">
@@ -37,7 +38,8 @@
         </button>
       </div>
     </header>
-    <main id="main" class="container section" tabindex="-1">
+
+    <main id="main" class="container section">
       <h1 id="page-title">Каталог вакансій</h1>
 
       <div class="catalog">
@@ -56,6 +58,7 @@
               />
               <p id="q-hint" class="field__hint">Усі слова мають знайтися у вакансії.</p>
             </div>
+
             <fieldset class="field" aria-describedby="geo-hint">
               <legend>Регіон</legend>
               <label class="choice"
@@ -76,55 +79,185 @@
                 пошуку
               </p>
             </fieldset>
+
             <div class="field">
               <label for="level">Рівень</label>
               <select id="level" name="level">
                 <option value="">Будь-який рівень</option>
               </select>
             </div>
+
             <div class="field">
               <label for="type">Тип зайнятості</label>
               <select id="type" name="type">
                 <option value="">Будь-який тип</option>
               </select>
             </div>
-            <div class="field filters__toggles">
-              <label class="choice"
-                ><input id="salary-only" type="checkbox" name="salary" /> Лише із вказаною
-                зарплатою</label
-              >
-              <label class="choice"
-                ><input id="saved-only" type="checkbox" name="saved" /> Лише збережені</label
-              >
+
+            <div class="field">
+              <label class="choice">
+                <input id="salary-only" type="checkbox" name="salary" />
+                Лише із вказаною зарплатою
+              </label>
+              <label class="choice">
+                <input id="saved-only" type="checkbox" name="saved" />
+                Лише збережені
+              </label>
             </div>
+
             <div class="field">
               <label for="sort">Сортувати за</label>
-              <select id="sort" name="sort"></select>
+              <select id="sort" name="sort">
+                <option value="relevance">Релевантність</option>
+                <option value="date">Дата публікації</option>
+                <option value="salary">Зарплата</option>
+                <option value="title">Назва (A–Z)</option>
+                <option value="company">Компанія (A–Z)</option>
+              </select>
             </div>
+
             <button id="reset" type="button" class="btn">Скинути фільтри</button>
           </form>
         </details>
 
         <section aria-labelledby="results-title">
           <h2 id="results-title" class="visually-hidden">Результати пошуку</h2>
-          <p id="results-status" class="results-status" role="status" aria-live="polite"></p>
-          <div id="results" class="card-grid" tabindex="-1" aria-busy="true"></div>
-          <nav id="pager" aria-label="Пагінація">
-  <button type="button" disabled>Попередня</button>
-  <span>Сторінка 1 з 1</span>
-  <button type="button" disabled>Наступна</button>
-</nav>
+          <p id="results-status" class="results-status" role="status" aria-live="polite">
+            Знайдено: 3 вакансії
+          </p>
+
+          <div id="results" class="card-grid">
+            <article class="job-card" aria-labelledby="job-title-1">
+              <header class="job-card__header">
+                <span class="job-card__logo" aria-hidden="true">GI</span>
+                <div>
+                  <h3 class="job-card__title" id="job-title-1">
+                    <a href="job.html">Senior TypeScript Engineer</a>
+                  </h3>
+                  <p class="job-card__company">Global IT Solutions</p>
+                </div>
+              </header>
+              <ul class="badges" role="list">
+                <li class="badge">Звідусіль</li>
+                <li class="badge">Full-Time</li>
+                <li class="badge">Senior</li>
+              </ul>
+              <p class="job-card__geo">Remote (Worldwide)</p>
+              <p class="job-card__excerpt">
+                Розробка високонавантажених сервісів на TypeScript та Node.js.
+              </p>
+              <div class="job-card__footer">
+                <div class="job-card__facts">
+                  <span class="job-card__salary">$4 000 – $6 000 / міс.</span>
+                  <time class="job-card__date" datetime="2026-10-14">3 дні тому</time>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn--save"
+                  aria-pressed="false"
+                  aria-label="Зберегти вакансію: Senior TypeScript Engineer"
+                >
+                  <span class="btn__icon" aria-hidden="true"></span>Зберегти
+                </button>
+              </div>
+            </article>
+
+            <article class="job-card" aria-labelledby="job-title-2">
+              <header class="job-card__header">
+                <span class="job-card__logo" aria-hidden="true">CW</span>
+                <div>
+                  <h3 class="job-card__title" id="job-title-2">
+                    <a href="job.html">Frontend React Developer</a>
+                  </h3>
+                  <p class="job-card__company">Creative Web Studio</p>
+                </div>
+              </header>
+              <ul class="badges" role="list">
+                <li class="badge badge--yes">Доступно з України</li>
+                <li class="badge">Full-Time</li>
+                <li class="badge">Middle</li>
+              </ul>
+              <p class="job-card__geo">Україна (Remote)</p>
+              <p class="job-card__excerpt">
+                Верстка та інтеграція REST API для сучасних вебзастосунків.
+              </p>
+              <div class="job-card__footer">
+                <div class="job-card__facts">
+                  <span class="job-card__salary">$2 500 – $3 500 / міс.</span>
+                  <time class="job-card__date" datetime="2026-10-12">5 днів тому</time>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn--save"
+                  aria-pressed="false"
+                  aria-label="Зберегти вакансію: Frontend React Developer"
+                >
+                  <span class="btn__icon" aria-hidden="true"></span>Зберегти
+                </button>
+              </div>
+            </article>
+
+            <article class="job-card" aria-labelledby="job-title-3">
+              <header class="job-card__header">
+                <span class="job-card__logo" aria-hidden="true">TP</span>
+                <div>
+                  <h3 class="job-card__title" id="job-title-3">
+                    <a href="job.html">Full Stack Developer (Node.js / Vue)</a>
+                  </h3>
+                  <p class="job-card__company">Tech Product Lab</p>
+                </div>
+              </header>
+              <ul class="badges" role="list">
+                <li class="badge badge--maybe">Європа — уточніть умови</li>
+                <li class="badge">Contract</li>
+                <li class="badge">Senior</li>
+              </ul>
+              <p class="job-card__geo">Європа / EMEA</p>
+              <p class="job-card__excerpt">
+                Підтримка мікросервісів і розробка нових функцій для продукту.
+              </p>
+              <div class="job-card__footer">
+                <div class="job-card__facts">
+                  <span class="job-card__salary">Зарплата не вказана</span>
+                  <time class="job-card__date" datetime="2026-10-10">7 днів тому</time>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn--save"
+                  aria-pressed="false"
+                  aria-label="Зберегти вакансію: Full Stack Developer (Node.js / Vue)"
+                >
+                  <span class="btn__icon" aria-hidden="true"></span>Зберегти
+                </button>
+              </div>
+            </article>
+          </div>
+
+          <nav id="pager" class="pagination" aria-label="Пагінація">
+            <ul class="pagination__list" role="list">
+              <li>
+                <button type="button" class="pagination__button" disabled>Попередня</button>
+              </li>
+              <li>
+                <button type="button" class="pagination__button" aria-current="page">1</button>
+              </li>
+              <li><button type="button" class="pagination__button">2</button></li>
+              <li><button type="button" class="pagination__button">3</button></li>
+              <li><button type="button" class="pagination__button">Наступна</button></li>
+            </ul>
+          </nav>
+
           <p id="data-note" class="data-note"></p>
         </section>
       </div>
     </main>
+
     <footer class="site-footer">
       <div class="container">
         <p>
           Дані вакансій надає
-          <a href="https://jobicy.com" target="_blank" rel="noopener noreferrer"
-            >Jobicy<span class="visually-hidden"> (відкриється в новій вкладці)</span></a
-          >. Кожна вакансія має посилання на оригінал.
+          <a href="https://jobicy.com">Jobicy</a>.
+          Кожна вакансія має посилання на оригінал.
         </p>
       </div>
     </footer>
