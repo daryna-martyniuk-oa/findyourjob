@@ -43,9 +43,9 @@
             <li><a href="index.html" aria-current="page">Головна</a></li>
             <li><a href="jobs.html">Вакансії</a></li>
             <li>
-              <a href="jobs.html?saved=1"
-                >Збережені <span class="count" id="saved-count" hidden>0</span></a
-              >
+              <a href="jobs.html?saved=1" data-nav="saved">
+                Збережені <span class="count" id="saved-count" hidden>0</span>
+              </a>
             </li>
           </ul>
         </nav>
@@ -136,7 +136,7 @@
           <h2 id="latest-title">Вакансії</h2>
           <a href="jobs.html">Усі вакансії</a>
         </div>
-        <div id="latest" class="card-grid">
+        <div id="latest" class="card-grid" aria-busy="true">
           <article class="job-card" aria-labelledby="job-title-1">
             <header class="job-card__header">
               <span class="job-card__logo" aria-hidden="true">GI</span>
