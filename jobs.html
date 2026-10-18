@@ -9,10 +9,19 @@
       content="Шукайте вакансії та фільтруйте пропозиції за посадою, регіоном і типом зайнятості."
     />
     <meta name="color-scheme" content="light" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="uk_UA" />
+    <meta property="og:title" content="Вакансії — FindYourJob" />
+    <meta
+      property="og:description"
+      content="Шукайте вакансії та фільтруйте пропозиції за посадою, регіоном і типом зайнятості."
+    />
+
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./src/styles/main.css" />
   </head>
   <body>
+    <a class="skip-link" href="#main">Перейти до основного вмісту</a>
     <header class="site-header">
       <div class="container site-header__inner">
         <a class="brand" href="index.html">
@@ -39,11 +48,11 @@
       </div>
     </header>
 
-    <main id="main" class="container section">
+    <main id="main" class="container section" tabindex="-1">
       <h1 id="page-title">Каталог вакансій</h1>
 
       <div class="catalog">
-        <details id="filters-panel" class="filters">
+        <details id="filters-panel" class="filters" open>
           <summary>Пошук і фільтри</summary>
           <form id="filters-form" class="filters__form" role="search" aria-label="Фільтри вакансій">
             <div class="field">
@@ -254,10 +263,11 @@
 
     <footer class="site-footer">
       <div class="container">
-        <p>
+       <p>
           Дані вакансій надає
-          <a href="https://jobicy.com">Jobicy</a>.
-          Кожна вакансія має посилання на оригінал.
+          <a href="https://jobicy.com" target="_blank" rel="noopener noreferrer"
+            >Jobicy<span class="visually-hidden"> (відкриється в новій вкладці)</span></a
+          >. Кожна вакансія має посилання на оригінал.
         </p>
       </div>
     </footer>

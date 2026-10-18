@@ -20,6 +20,9 @@
   }
 
   .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     background: var(--surface);
     border-bottom: 1px solid var(--border);
   }
@@ -73,5 +76,25 @@
   }
   .site-footer p + p {
     margin-top: var(--space-1);
+  }
+
+  @media (min-width: 48rem) {
+    .hero__inner {
+      grid-template-columns: minmax(0, 1.2fr) minmax(19rem, 0.8fr);
+      align-items: center;
+      gap: var(--space-6);
+    }
+  }
+  @media (min-width: 56rem) {
+    .catalog {
+      grid-template-columns: 19rem minmax(0, 1fr);
+      align-items: start;
+    }
+    .filters {
+      position: sticky;
+      top: 6rem;
+      max-height: calc(100vh - 7rem);
+      overflow-y: auto;
+    }
   }
 }
