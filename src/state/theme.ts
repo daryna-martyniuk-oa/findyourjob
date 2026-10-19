@@ -13,6 +13,7 @@ export function applyTheme(theme: Theme): void {
   try {
     localStorage.setItem(STORAGE_KEYS.theme, theme);
   } catch {
+    //ignore
   }
 }
 

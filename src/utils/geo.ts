@@ -104,7 +104,6 @@ function isUkraine(geo: string): boolean {
   return containsAnyLocation(geo, new Set(['ukraine']));
 }
 
-
 export function uaEligibility(geo: string): UaEligibility {
   if (isUkraine(geo)) return 'yes';
   if (isWorldwide(geo)) return 'anywhere';

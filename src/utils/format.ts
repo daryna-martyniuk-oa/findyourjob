@@ -26,6 +26,7 @@ function numberFormatter(currency: string | null): (n: number) => string {
       });
       return (n) => nf.format(n);
     } catch {
+      // ignore
     }
   }
   const nf = new Intl.NumberFormat('uk-UA', { maximumFractionDigits: 0 });

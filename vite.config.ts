@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 const page = (file: string): string => fileURLToPath(new URL(file, import.meta.url));
 
@@ -13,5 +13,10 @@ export default defineConfig({
         job: page('job.html'),
       },
     },
+  },
+  test: {
+    environment: 'jsdom',
+    include: ['tests/**/*.test.ts'],
+    setupFiles: ['./tests/setup.ts'],
   },
 });

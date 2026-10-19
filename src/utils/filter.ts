@@ -44,7 +44,6 @@ function getIndex(job: Job): SearchIndex {
   return index;
 }
 
-
 export function searchScore(job: Job, tokens: readonly string[]): number {
   if (tokens.length === 0) return 1;
   const { title, company, rest } = getIndex(job);
@@ -76,7 +75,6 @@ const ANNUAL_MULTIPLIER: Record<string, number> = {
   hour: 2080,
   hourly: 2080,
 };
-
 
 export function annualSalary(job: Job): number {
   const salary = job.salary;

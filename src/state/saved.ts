@@ -22,6 +22,7 @@ export function toggleSaved(id: number, storage: Storage = localStorage): boolea
   try {
     storage.setItem(STORAGE_KEYS.saved, JSON.stringify([...saved]));
   } catch {
+    // ignore
   }
   window.dispatchEvent(new CustomEvent(SAVED_EVENT));
   return nowSaved;
