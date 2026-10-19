@@ -5,11 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "fixtures:update": "node scripts/save-jobs.mjs"
+    "fixtures:update": "node scripts/save-jobs.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
     "vite": "^5.4.0"
   },
   "dependencies": {

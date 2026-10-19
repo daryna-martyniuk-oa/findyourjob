@@ -1,6 +1,6 @@
-import { el } from '../utils/dom.js';
+import { el } from '../utils/dom';
 
-export function createJobSkeleton() {
+export function createJobSkeleton(): HTMLElement {
   return el(
     'article',
     { class: 'job-card job-card--skeleton', 'aria-hidden': 'true' },
@@ -31,7 +31,7 @@ export function createJobSkeleton() {
   );
 }
 
-export function createJobSkeletons(count) {
+export function createJobSkeletons(count: number): DocumentFragment {
   const fragment = document.createDocumentFragment();
   for (let index = 0; index < count; index += 1) {
     fragment.append(createJobSkeleton());

@@ -1,8 +1,19 @@
-import { loadJobs } from '../api/jobicy.js';
-import { createError, describeError } from '../components/status.js';
-import { createJobSkeletons } from '../components/jobSkeleton.js';
+import { loadJobs } from '../api/jobicy';
+import { createError, describeError } from '../components/status';
+import { createJobSkeletons } from '../components/jobSkeleton';
+import type { LoadResult } from '../types/job';
 
-export async function loadIntoContainer(container, options) {
+export interface LoadViewOptions {
+  skeletons: number;
+  force?: boolean;
+  onRetry: () => void;
+  onStatus?: (text: string) => void;
+}
+
+export async function loadIntoContainer(
+  container: HTMLElement,
+  options: LoadViewOptions,
+): Promise<LoadResult | null> {
   container.setAttribute('aria-busy', 'true');
   container.replaceChildren(createJobSkeletons(options.skeletons));
   options.onStatus?.('Завантаження вакансій…');

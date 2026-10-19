@@ -1,4 +1,6 @@
-export const DEFAULT_FILTERS = {
+import type { Filters, GeoMode, SortKey } from '../types/filters';
+
+export const DEFAULT_FILTERS: Readonly<Filters> = {
   query: '',
   level: '',
   type: '',
@@ -8,13 +10,15 @@ export const DEFAULT_FILTERS = {
   sort: 'relevance',
 };
 
-const GEO_MODES = ['all', 'ua', 'europe', 'north-america'];
-const SORT_KEYS = ['relevance', 'date', 'salary', 'title', 'company'];
+const GEO_MODES: readonly string[] = ['all', 'ua', 'europe', 'north-america'];
+const SORT_KEYS: readonly string[] = ['relevance', 'date', 'salary', 'title', 'company'];
 
-const isGeoMode = (value) => value !== null && GEO_MODES.includes(value);
-const isSortKey = (value) => value !== null && SORT_KEYS.includes(value);
+const isGeoMode = (value: string | null): value is GeoMode =>
+  value !== null && GEO_MODES.includes(value);
+const isSortKey = (value: string | null): value is SortKey =>
+  value !== null && SORT_KEYS.includes(value);
 
-export function parseFilters(search) {
+export function parseFilters(search: string): Filters {
   const params = new URLSearchParams(search);
   const geo = params.get('geo');
   const sort = params.get('sort');
@@ -29,7 +33,7 @@ export function parseFilters(search) {
   };
 }
 
-export function serializeFilters(filters) {
+export function serializeFilters(filters: Filters): string {
   const params = new URLSearchParams();
   if (filters.query) params.set('q', filters.query);
   if (filters.level) params.set('level', filters.level);

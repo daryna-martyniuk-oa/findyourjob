@@ -1,23 +1,24 @@
-import { createSaveButton, createCompanyLogo } from '../components/jobCard.js';
-import { createEmpty, describeSource } from '../components/status.js';
-import { el, qs } from '../utils/dom.js';
-import { formatDate, formatRelative, formatSalary } from '../utils/format.js';
-import { UA_LABELS, uaEligibility } from '../utils/geo.js';
-import { sanitizeHtml } from '../utils/sanitize.js';
-import { loadIntoContainer } from './shared.js';
+import { createCompanyLogo, createSaveButton } from '../components/jobCard';
+import { createEmpty, describeSource } from '../components/status';
+import type { Job } from '../types/job';
+import { el, qs } from '../utils/dom';
+import { formatDate, formatRelative, formatSalary } from '../utils/format';
+import { UA_LABELS, uaEligibility } from '../utils/geo';
+import { sanitizeHtml } from '../utils/sanitize';
+import { loadIntoContainer } from './shared';
 
-export function parseJobId(search) {
+export function parseJobId(search: string): number | null {
   const raw = new URLSearchParams(search).get('id');
   if (!raw || !/^\d+$/.test(raw)) return null;
   return Number(raw);
 }
 
-function fact(label, value) {
+function fact(label: string, value: string | HTMLElement | null): HTMLElement | null {
   if (!value) return null;
   return el('div', { class: 'facts__item' }, el('dt', {}, label), el('dd', {}, value));
 }
 
-export function createJobDetails(job) {
+export function createJobDetails(job: Job): HTMLElement {
   const eligibility = uaEligibility(job.geo);
   const uaLabel = UA_LABELS[eligibility];
   const salary = formatSalary(job.salary);
@@ -26,6 +27,7 @@ export function createJobDetails(job) {
 
   const description = el('div', { class: 'prose' });
   if (job.descriptionHtml) {
+    // Єдине місце, де вставляється чужий HTML — лише після очищення DOMPurify.
     description.innerHTML = sanitizeHtml(job.descriptionHtml);
   } else {
     description.append(
@@ -33,13 +35,15 @@ export function createJobDetails(job) {
     );
   }
 
+  const logo = createCompanyLogo(job, true);
+
   return el(
     'article',
     { class: 'job-details', 'aria-labelledby': 'job-title' },
     el(
       'header',
       { class: 'job-details__header' },
-      createCompanyLogo(job, true),
+      logo,
       el(
         'div',
         {},
@@ -66,12 +70,7 @@ export function createJobDetails(job) {
       { class: 'job-details__actions' },
       el(
         'a',
-        {
-          class: 'btn btn--primary',
-          href: job.url,
-          target: '_blank',
-          rel: 'noopener noreferrer',
-        },
+        { class: 'btn btn--primary', href: job.url, target: '_blank', rel: 'noopener noreferrer' },
         'Відкрити вакансію на Jobicy',
         el('span', { class: 'visually-hidden' }, ' (відкриється в новій вкладці)'),
       ),
@@ -94,9 +93,9 @@ export function createJobDetails(job) {
   );
 }
 
-export async function initJobPage() {
-  const root = qs('#job-root');
-  const crumb = qs('#crumb-current');
+export async function initJobPage(): Promise<void> {
+  const root = qs<HTMLElement>('#job-root');
+  const crumb = document.querySelector<HTMLElement>('#crumb-current');
   const id = parseJobId(window.location.search);
 
   const backLink = el('a', { class: 'btn', href: 'jobs.html' }, 'До каталогу вакансій');
@@ -110,11 +109,11 @@ export async function initJobPage() {
     return;
   }
 
-  const load = async (force = false) => {
+  const load = async (force = false): Promise<void> => {
     const result = await loadIntoContainer(root, {
       skeletons: 1,
       force,
-      onRetry: () => load(true),
+      onRetry: () => void load(true),
     });
     if (!result) return;
 
@@ -123,7 +122,7 @@ export async function initJobPage() {
       root.replaceChildren(
         createEmpty(
           'Вакансію не знайдено',
-          'Можливо, її вже закрили або список оновився. Поверніться до каталогу.',
+          'Можливо, її вже закрили, або список вакансій оновився. Поверніться до каталогу.',
           el('a', { class: 'btn', href: 'jobs.html' }, 'До каталогу вакансій'),
         ),
       );

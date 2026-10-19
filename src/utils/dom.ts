@@ -1,4 +1,11 @@
-export function el(tag, attrs = {}, ...children) {
+type Child = Node | string | null | undefined | false;
+type Attrs = Record<string, string | number | boolean | null | undefined>;
+
+export function el<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  attrs: Attrs = {},
+  ...children: Child[]
+): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag);
   for (const [key, value] of Object.entries(attrs)) {
     if (value === null || value === undefined || value === false) continue;
@@ -13,8 +20,8 @@ export function el(tag, attrs = {}, ...children) {
   return node;
 }
 
-export function qs(selector, root = document) {
-  const node = root.querySelector(selector);
+export function qs<T extends Element>(selector: string, root: ParentNode = document): T {
+  const node = root.querySelector<T>(selector);
   if (!node) throw new Error(`Element not found: ${selector}`);
   return node;
 }

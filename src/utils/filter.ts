@@ -1,20 +1,28 @@
-import { matchesGeoMode } from './geo.js';
+import type { Filters, SortKey } from '../types/filters';
+import type { Job } from '../types/job';
+import { matchesGeoMode } from './geo';
 
-export function normalizeText(value) {
+export function normalizeText(value: string): string {
   return value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 }
 
-export function tokenize(query) {
+export function tokenize(query: string): string[] {
   return normalizeText(query).split(/\s+/).filter(Boolean);
 }
 
-const indexCache = new WeakMap();
+interface SearchIndex {
+  title: string;
+  company: string;
+  rest: string;
+}
 
-function stripTags(html) {
+const indexCache = new WeakMap<Job, SearchIndex>();
+
+function stripTags(html: string): string {
   return html.replace(/<[^>]*>/g, ' ');
 }
 
-function getIndex(job) {
+function getIndex(job: Job): SearchIndex {
   let index = indexCache.get(job);
   if (!index) {
     index = {
@@ -36,7 +44,8 @@ function getIndex(job) {
   return index;
 }
 
-export function searchScore(job, tokens) {
+
+export function searchScore(job: Job, tokens: readonly string[]): number {
   if (tokens.length === 0) return 1;
   const { title, company, rest } = getIndex(job);
   let total = 0;
@@ -53,7 +62,7 @@ export function searchScore(job, tokens) {
   return total;
 }
 
-const ANNUAL_MULTIPLIER = {
+const ANNUAL_MULTIPLIER: Record<string, number> = {
   year: 1,
   yearly: 1,
   annual: 1,
@@ -69,7 +78,7 @@ const ANNUAL_MULTIPLIER = {
 };
 
 
-export function annualSalary(job) {
+export function annualSalary(job: Job): number {
   const salary = job.salary;
   const amount = salary?.max ?? salary?.min ?? null;
   if (!salary || amount === null) return -1;
@@ -77,15 +86,15 @@ export function annualSalary(job) {
   return amount * multiplier;
 }
 
-function timestamp(job) {
+function timestamp(job: Job): number {
   const time = Date.parse(job.publishedAt);
   return Number.isNaN(time) ? 0 : time;
 }
 
-const byDateDesc = (a, b) => timestamp(b) - timestamp(a);
-const byText = (a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' });
+const byDateDesc = (a: Job, b: Job): number => timestamp(b) - timestamp(a);
+const byText = (a: string, b: string): number => a.localeCompare(b, 'en', { sensitivity: 'base' });
 
-const LEVEL_ORDER = [
+const LEVEL_ORDER: readonly { rank: number; terms: readonly string[] }[] = [
   { rank: 0, terms: ['entry', 'junior', 'intern', 'graduate'] },
   { rank: 1, terms: ['midweight', 'mid-level', 'mid level', 'intermediate'] },
   { rank: 2, terms: ['senior'] },
@@ -93,7 +102,7 @@ const LEVEL_ORDER = [
   { rank: 4, terms: ['director', 'executive', 'head'] },
 ];
 
-function levelRank(level) {
+function levelRank(level: string): number {
   const normalized = normalizeText(level);
   return (
     LEVEL_ORDER.find(({ terms }) => terms.some((term) => normalized.includes(term)))?.rank ??
@@ -101,11 +110,15 @@ function levelRank(level) {
   );
 }
 
-function bySeniority(a, b) {
+function bySeniority(a: string, b: string): number {
   return levelRank(a) - levelRank(b) || byText(a, b);
 }
 
-export function filterJobs(jobs, filters, savedIds = new Set()) {
+export function filterJobs(
+  jobs: readonly Job[],
+  filters: Filters,
+  savedIds: ReadonlySet<number>,
+): Job[] {
   const tokens = tokenize(filters.query);
   return jobs.filter((job) => {
     if (filters.level && job.level !== filters.level) return false;
@@ -117,7 +130,7 @@ export function filterJobs(jobs, filters, savedIds = new Set()) {
   });
 }
 
-export function sortJobs(jobs, sort, query = '') {
+export function sortJobs(jobs: readonly Job[], sort: SortKey, query = ''): Job[] {
   const list = [...jobs];
   switch (sort) {
     case 'relevance': {
@@ -139,8 +152,8 @@ export function sortJobs(jobs, sort, query = '') {
   }
 }
 
-export function collectOptions(jobs, field) {
-  const values = new Set();
+export function collectOptions(jobs: readonly Job[], field: 'level' | 'types'): string[] {
+  const values = new Set<string>();
   for (const job of jobs) {
     if (field === 'level') {
       if (job.level) values.add(job.level);

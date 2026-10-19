@@ -1,4 +1,4 @@
-export function safeHttpUrl(value) {
+export function safeHttpUrl(value: unknown): string | null {
   if (typeof value !== 'string') return null;
   try {
     const url = new URL(value.trim());

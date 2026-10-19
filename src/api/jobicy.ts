@@ -1,16 +1,22 @@
-import { STORAGE_KEYS } from '../config.js';
-import { logger } from '../utils/logger.js';
-import { isFresh, readCache, writeCache } from './cache.js';
-import { isRecord, normalizeJob } from './normalize.js';
+import type { Job, LoadResult } from '../types/job';
+import { STORAGE_KEYS } from '../config';
+import { logger } from '../utils/logger';
+import { isFresh, readCache, writeCache } from './cache';
+import { isRecord, normalizeJob } from './normalize';
 
 export const API_URL = 'https://jobicy.com/api/v2/remote-jobs';
-export const INDUSTRIES = ['engineering', 'dev', 'data-science'];
+export const INDUSTRIES = ['engineering', 'dev', 'data-science'] as const;
 export const MAX_COUNT = 200;
 export const CACHE_TTL_MS = 60 * 60 * 1000;
 const REQUEST_TIMEOUT_MS = 12_000;
 
+export type ApiErrorKind = 'network' | 'timeout' | 'http' | 'parse';
+
 export class ApiError extends Error {
-  constructor(kind, message, status) {
+  readonly kind: ApiErrorKind;
+  readonly status: number | undefined;
+
+  constructor(kind: ApiErrorKind, message: string, status?: number) {
     super(message);
     this.name = 'ApiError';
     this.kind = kind;
@@ -18,27 +24,27 @@ export class ApiError extends Error {
   }
 }
 
-export function buildUrl(industry, count = MAX_COUNT) {
+export function buildUrl(industry: string, count: number = MAX_COUNT): string {
   const url = new URL(API_URL);
   url.searchParams.set('count', String(count));
   url.searchParams.set('industry', industry);
   return url.toString();
 }
 
-const useFixture = () => import.meta.env.VITE_USE_FIXTURE === 'true';
+const useFixture = (): boolean => import.meta.env.VITE_USE_FIXTURE === 'true';
 
-export function fixtureUrl() {
+export function fixtureUrl(): string {
   return `${import.meta.env.BASE_URL}fixtures/jobs.json`;
 }
 
-async function fetchJson(url, signal) {
+async function fetchJson(url: string, signal?: AbortSignal): Promise<unknown> {
   const controller = new AbortController();
   let timedOut = false;
   const timer = setTimeout(() => {
     timedOut = true;
     controller.abort();
   }, REQUEST_TIMEOUT_MS);
-  const forwardAbort = () => controller.abort();
+  const forwardAbort = (): void => controller.abort();
   signal?.addEventListener('abort', forwardAbort, { once: true });
 
   try {
@@ -60,23 +66,23 @@ async function fetchJson(url, signal) {
   }
 }
 
-export function extractJobs(payload) {
+export function extractJobs(payload: unknown): Job[] {
   if (!isRecord(payload) || !Array.isArray(payload.jobs)) {
     throw new ApiError('parse', 'Неочікувана структура відповіді');
   }
-  return payload.jobs.map(normalizeJob).filter((job) => job !== null);
+  return payload.jobs.map(normalizeJob).filter((job): job is Job => job !== null);
 }
 
-export function dedupeById(jobs) {
+export function dedupeById(jobs: readonly Job[]): Job[] {
   return [...new Map(jobs.map((job) => [job.id, job])).values()];
 }
 
-async function fetchAllIndustries(signal) {
+async function fetchAllIndustries(signal?: AbortSignal): Promise<Job[]> {
   const results = await Promise.allSettled(
     INDUSTRIES.map(async (industry) => extractJobs(await fetchJson(buildUrl(industry), signal))),
   );
-  const jobs = [];
-  let firstError;
+  const jobs: Job[] = [];
+  let firstError: unknown;
   results.forEach((result, index) => {
     if (result.status === 'fulfilled') {
       jobs.push(...result.value);
@@ -89,14 +95,19 @@ async function fetchAllIndustries(signal) {
   return dedupeById(jobs);
 }
 
-export async function loadJobs(options = {}) {
+export interface LoadOptions {
+  force?: boolean;
+  signal?: AbortSignal;
+}
+
+export async function loadJobs(options: LoadOptions = {}): Promise<LoadResult> {
   if (useFixture()) {
     const jobs = extractJobs(await fetchJson(fixtureUrl(), options.signal));
     logger.debug('Fixture mode:', jobs.length, 'jobs');
-    return { jobs, source: 'fixture', fetchedAt: Date.now() };
+    return { jobs, source: 'snapshot', fetchedAt: Date.now() };
   }
 
-  const cached = readCache(STORAGE_KEYS.jobs);
+  const cached = readCache<Job[]>(STORAGE_KEYS.jobs);
   if (!options.force && cached && isFresh(cached, CACHE_TTL_MS)) {
     logger.debug('Cache hit:', cached.data.length, 'jobs');
     return { jobs: cached.data, source: 'cache', fetchedAt: cached.savedAt };

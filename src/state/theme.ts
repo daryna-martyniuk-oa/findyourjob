@@ -1,12 +1,14 @@
-import { STORAGE_KEYS } from '../config.js';
+import { STORAGE_KEYS } from '../config';
 
-export function currentTheme() {
+export type Theme = 'light' | 'dark';
+
+export function currentTheme(): Theme {
   const attr = document.documentElement.dataset.theme;
   if (attr === 'light' || attr === 'dark') return attr;
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
-export function applyTheme(theme) {
+export function applyTheme(theme: Theme): void {
   document.documentElement.dataset.theme = theme;
   try {
     localStorage.setItem(STORAGE_KEYS.theme, theme);
@@ -14,10 +16,10 @@ export function applyTheme(theme) {
   }
 }
 
-export function initTheme() {
-  const button = document.querySelector('#theme-toggle');
+export function initTheme(): void {
+  const button = document.querySelector<HTMLButtonElement>('#theme-toggle');
   if (!button) return;
-  const sync = () => button.setAttribute('aria-pressed', String(currentTheme() === 'dark'));
+  const sync = (): void => button.setAttribute('aria-pressed', String(currentTheme() === 'dark'));
   sync();
   button.addEventListener('click', () => {
     applyTheme(currentTheme() === 'dark' ? 'light' : 'dark');

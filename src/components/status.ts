@@ -1,8 +1,9 @@
-import { ApiError } from '../api/jobicy.js';
-import { formatRelative } from '../utils/format.js';
-import { el } from '../utils/dom.js';
+import { ApiError } from '../api/jobicy';
+import type { LoadResult } from '../types/job';
+import { formatRelative } from '../utils/format';
+import { el } from '../utils/dom';
 
-export function describeError(error) {
+export function describeError(error: unknown): string {
   if (error instanceof ApiError) {
     switch (error.kind) {
       case 'timeout':
@@ -18,7 +19,7 @@ export function describeError(error) {
   return 'Сталася непередбачена помилка. Спробуйте ще раз.';
 }
 
-export function createError(message, onRetry) {
+export function createError(message: string, onRetry: () => void): HTMLElement {
   const retry = el('button', { type: 'button', class: 'btn btn--primary' }, 'Повторити спробу');
   retry.addEventListener('click', onRetry);
   return el(
@@ -30,7 +31,7 @@ export function createError(message, onRetry) {
   );
 }
 
-export function createEmpty(title, hint, action) {
+export function createEmpty(title: string, hint: string, action?: HTMLElement): HTMLElement {
   return el(
     'div',
     { class: 'state state--empty' },
@@ -40,7 +41,7 @@ export function createEmpty(title, hint, action) {
   );
 }
 
-export function describeSource(result, now = new Date()) {
+export function describeSource(result: LoadResult, now: Date = new Date()): string {
   const when = formatRelative(new Date(result.fetchedAt).toISOString(), now);
   switch (result.source) {
     case 'network':
@@ -50,9 +51,6 @@ export function describeSource(result, now = new Date()) {
     case 'stale-cache':
       return `Не вдалося оновити дані — показано збережену копію (${when}).`;
     case 'snapshot':
-    case 'fixture':
       return 'API тимчасово недоступне — показано локальний знімок вакансій.';
-    default:
-      return '';
   }
 }

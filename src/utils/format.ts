@@ -1,4 +1,6 @@
-const PERIOD_LABELS = {
+import type { Salary } from '../types/job';
+
+const PERIOD_LABELS: Record<string, string> = {
   year: 'рік',
   yearly: 'рік',
   annual: 'рік',
@@ -13,7 +15,7 @@ const PERIOD_LABELS = {
   hourly: 'год.',
 };
 
-function numberFormatter(currency) {
+function numberFormatter(currency: string | null): (n: number) => string {
   if (currency && /^[A-Za-z]{3}$/.test(currency)) {
     try {
       const nf = new Intl.NumberFormat('uk-UA', {
@@ -30,13 +32,15 @@ function numberFormatter(currency) {
   return (n) => nf.format(n);
 }
 
-export function formatSalary(salary) {
+export function formatSalary(salary: Salary | null): string | null {
   if (!salary) return null;
   const { min, max } = salary;
   if (min === null && max === null) return null;
   const fmt = numberFormatter(salary.currency);
   const range =
-    min !== null && max !== null && min !== max ? `${fmt(min)} – ${fmt(max)}` : fmt(max ?? min);
+    min !== null && max !== null && min !== max
+      ? `${fmt(min)} – ${fmt(max)}`
+      : fmt((max ?? min) as number);
   const period = salary.period ? PERIOD_LABELS[salary.period.toLowerCase()] : undefined;
   return period ? `${range} / ${period}` : range;
 }
@@ -48,7 +52,7 @@ const dateFormat = new Intl.DateTimeFormat('uk-UA', {
   year: 'numeric',
 });
 
-export function formatRelative(iso, now = new Date()) {
+export function formatRelative(iso: string, now: Date = new Date()): string {
   const time = Date.parse(iso);
   if (Number.isNaN(time)) return '';
   const days = Math.trunc((time - now.getTime()) / 86_400_000);
@@ -58,14 +62,14 @@ export function formatRelative(iso, now = new Date()) {
   return relativeFormat.format(Math.trunc(days / 365), 'year');
 }
 
-export function formatDate(iso) {
+export function formatDate(iso: string): string {
   const time = Date.parse(iso);
   return Number.isNaN(time) ? '' : dateFormat.format(new Date(time));
 }
 
 const pluralRules = new Intl.PluralRules('uk');
 
-export function pluralUk(n, forms) {
+export function pluralUk(n: number, forms: readonly [string, string, string]): string {
   const category = pluralRules.select(n);
   if (category === 'one') return forms[0];
   if (category === 'few') return forms[1];

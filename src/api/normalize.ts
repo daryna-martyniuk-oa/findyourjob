@@ -1,35 +1,58 @@
-import { safeHttpUrl } from '../utils/safe-url.js';
+import type { Job, Salary } from '../types/job';
+import { safeHttpUrl } from '../utils/safe-url';
 
-export function isRecord(value) {
+export interface JobicyJobDto {
+  id?: unknown;
+  url?: unknown;
+  jobSlug?: unknown;
+  jobTitle?: unknown;
+  companyName?: unknown;
+  companyLogo?: unknown;
+  jobIndustry?: unknown;
+  jobType?: unknown;
+  jobGeo?: unknown;
+  candidate_required_location?: unknown;
+  location?: unknown;
+  jobLevel?: unknown;
+  jobExcerpt?: unknown;
+  jobDescription?: unknown;
+  pubDate?: unknown;
+  salaryMin?: unknown;
+  salaryMax?: unknown;
+  salaryCurrency?: unknown;
+  salaryPeriod?: unknown;
+}
+
+export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-let decoder = null;
+let decoder: HTMLTextAreaElement | null = null;
 
-export function decodeEntities(value) {
+export function decodeEntities(value: string): string {
   if (!value.includes('&')) return value;
   decoder ??= document.createElement('textarea');
   decoder.innerHTML = value;
   return decoder.value;
 }
 
-function text(value) {
+function text(value: unknown): string {
   if (typeof value === 'string') return value.trim();
   if (typeof value === 'number') return String(value);
   return '';
 }
 
-function textList(value) {
+function textList(value: unknown): string[] {
   const items = Array.isArray(value) ? value : [value];
   return items.map(text).filter(Boolean).map(decodeEntities);
 }
 
-function positiveNumber(value) {
+function positiveNumber(value: unknown): number | null {
   const n = typeof value === 'number' ? value : Number(text(value).replace(/[^\d.]/g, ''));
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
-function readSalary(raw) {
+function readSalary(raw: JobicyJobDto): Salary | null {
   const min = positiveNumber(raw.salaryMin);
   const max = positiveNumber(raw.salaryMax);
   if (min === null && max === null) return null;
@@ -41,9 +64,9 @@ function readSalary(raw) {
   };
 }
 
-export function normalizeJob(raw) {
+export function normalizeJob(raw: unknown): Job | null {
   if (!isRecord(raw)) return null;
-  const dto = raw;
+  const dto: JobicyJobDto = raw;
 
   const id = Number(dto.id);
   const title = decodeEntities(text(dto.jobTitle));

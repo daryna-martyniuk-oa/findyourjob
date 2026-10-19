@@ -2,7 +2,7 @@ import DOMPurify from 'dompurify';
 
 let hookRegistered = false;
 
-function registerHook() {
+function registerHook(): void {
   if (hookRegistered) return;
   hookRegistered = true;
   DOMPurify.addHook('afterSanitizeAttributes', (node) => {
@@ -18,7 +18,7 @@ function registerHook() {
   });
 }
 
-export function sanitizeHtml(dirty) {
+export function sanitizeHtml(dirty: string): string {
   registerHook();
   return DOMPurify.sanitize(dirty, {
     USE_PROFILES: { html: true },

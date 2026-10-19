@@ -1,18 +1,18 @@
-import { HOME_LATEST_COUNT } from '../config.js';
-import { createJobCard } from '../components/jobCard.js';
-import { describeSource } from '../components/status.js';
-import { qs } from '../utils/dom.js';
-import { sortJobs } from '../utils/filter.js';
-import { loadIntoContainer } from './shared.js';
+import { HOME_LATEST_COUNT } from '../config';
+import { createJobCard } from '../components/jobCard';
+import { describeSource } from '../components/status';
+import { qs } from '../utils/dom';
+import { sortJobs } from '../utils/filter';
+import { loadIntoContainer } from './shared';
 
-export async function initHomePage() {
-  const form = qs('#hero-form');
-  const input = qs('#hero-q');
-  const stats = qs('#stats');
-  const latest = qs('#latest');
-  const note = qs('#data-note');
+export async function initHomePage(): Promise<void> {
+  const form = qs<HTMLFormElement>('#hero-form');
+  const input = qs<HTMLInputElement>('#hero-q');
+  const stats = qs<HTMLElement>('#stats');
+  const latest = qs<HTMLElement>('#latest');
+  const note = qs<HTMLElement>('#data-note');
 
-  document.querySelectorAll('.quick-filter[data-query]').forEach((tag) => {
+  document.querySelectorAll<HTMLButtonElement>('.quick-filter[data-query]').forEach((tag) => {
     tag.addEventListener('click', () => {
       input.value = tag.dataset.query ?? '';
       input.focus();
@@ -25,7 +25,7 @@ export async function initHomePage() {
     window.location.href = query ? `jobs.html?q=${encodeURIComponent(query)}` : 'jobs.html';
   });
 
-  const load = async (force = false) => {
+  const load = async (force = false): Promise<void> => {
     const result = await loadIntoContainer(latest, {
       skeletons: HOME_LATEST_COUNT,
       force,

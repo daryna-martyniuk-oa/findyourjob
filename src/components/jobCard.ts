@@ -1,23 +1,29 @@
-import { getSaved, toggleSaved } from '../state/saved.js';
-import { el } from '../utils/dom.js';
-import { formatRelative, formatSalary } from '../utils/format.js';
-import { UA_LABELS, uaEligibility } from '../utils/geo.js';
+import { getSaved, toggleSaved } from '../state/saved';
+import type { Job } from '../types/job';
+import { el } from '../utils/dom';
+import { formatRelative, formatSalary } from '../utils/format';
+import { UA_LABELS, uaEligibility } from '../utils/geo';
 
-export function jobUrl(job) {
+export interface JobCardOptions {
+  onSaveChange?: (job: Job, saved: boolean) => void;
+  headingLevel?: 2 | 3;
+}
+
+export function jobUrl(job: Job): string {
   return `job.html?id=${job.id}`;
 }
 
-function companyInitials(company) {
+function companyInitials(company: string): string {
   const words = company.trim().split(/\s+/).filter(Boolean);
   if (words.length > 1)
     return words
       .slice(0, 2)
-      .map((word) => word[0].toUpperCase())
+      .map((word) => word[0]!.toUpperCase())
       .join('');
   return (words[0] ?? '?').slice(0, 2).toUpperCase();
 }
 
-export function createCompanyLogo(job, large = false) {
+export function createCompanyLogo(job: Job, large = false): HTMLElement {
   const initials = companyInitials(job.company);
   const logo = el(
     'span',
@@ -51,7 +57,7 @@ export function createCompanyLogo(job, large = false) {
   return logo;
 }
 
-export function createSaveButton(job, onChange) {
+export function createSaveButton(job: Job, onChange?: (saved: boolean) => void): HTMLButtonElement {
   const isSaved = getSaved().has(job.id);
   const button = el(
     'button',
@@ -71,13 +77,13 @@ export function createSaveButton(job, onChange) {
       'aria-label',
       `${saved ? 'Прибрати зі збережених' : 'Зберегти вакансію'}: ${job.title}`,
     );
-    button.querySelector('.btn__label').textContent = saved ? 'Прибрати' : 'Зберегти';
+    button.querySelector('.btn__label')!.textContent = saved ? 'Прибрати' : 'Зберегти';
     onChange?.(saved);
   });
   return button;
 }
 
-export function createJobCard(job, options = {}) {
+export function createJobCard(job: Job, options: JobCardOptions = {}): HTMLElement {
   const titleId = `job-title-${job.id}`;
   const eligibility = uaEligibility(job.geo);
   const uaLabel = UA_LABELS[eligibility];

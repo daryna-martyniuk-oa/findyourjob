@@ -1,4 +1,6 @@
-export function parseGeo(geo) {
+import type { GeoMode, UaEligibility } from '../types/filters';
+
+export function parseGeo(geo: string): string[] {
   return geo
     .split(',')
     .map((part) => part.trim())
@@ -68,7 +70,7 @@ const NORTH_AMERICA_TOKENS = new Set([
   'usa',
 ]);
 
-function normalizedLocation(geo) {
+function normalizedLocation(geo: string): string {
   return ` ${geo
     .normalize('NFD')
     .replace(/\p{M}/gu, '')
@@ -77,39 +79,40 @@ function normalizedLocation(geo) {
     .trim()} `;
 }
 
-function containsAnyLocation(geo, terms) {
+function containsAnyLocation(geo: string, terms: ReadonlySet<string>): boolean {
   const normalized = normalizedLocation(geo);
   return [...terms].some((term) => normalized.includes(` ${term} `));
 }
 
-function isWorldwide(geo) {
+function isWorldwide(geo: string): boolean {
   return containsAnyLocation(geo, new Set(['anywhere', 'worldwide', 'global']));
 }
 
-function isEurope(geo) {
+function isEurope(geo: string): boolean {
   return containsAnyLocation(geo, new Set([...EUROPE_TOKENS, 'europe', 'emea']));
 }
 
-function isBroadEurope(geo) {
+function isBroadEurope(geo: string): boolean {
   return containsAnyLocation(geo, new Set(['europe', 'emea', 'eu']));
 }
 
-function hasSpecificEuropeanCountry(geo) {
+function hasSpecificEuropeanCountry(geo: string): boolean {
   return containsAnyLocation(geo, EUROPE_TOKENS);
 }
 
-function isUkraine(geo) {
+function isUkraine(geo: string): boolean {
   return containsAnyLocation(geo, new Set(['ukraine']));
 }
 
-export function uaEligibility(geo) {
+
+export function uaEligibility(geo: string): UaEligibility {
   if (isUkraine(geo)) return 'yes';
   if (isWorldwide(geo)) return 'anywhere';
   if (isBroadEurope(geo) && !hasSpecificEuropeanCountry(geo)) return 'maybe';
   return 'no';
 }
 
-export function matchesGeoMode(geo, mode) {
+export function matchesGeoMode(geo: string, mode: GeoMode): boolean {
   switch (mode) {
     case 'all':
       return true;
@@ -122,7 +125,7 @@ export function matchesGeoMode(geo, mode) {
   }
 }
 
-export const UA_LABELS = {
+export const UA_LABELS: Record<UaEligibility, string | null> = {
   yes: 'Доступно з України',
   anywhere: 'Звідусіль',
   maybe: 'Європа — уточніть умови',

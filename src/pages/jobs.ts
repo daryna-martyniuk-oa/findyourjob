@@ -1,15 +1,34 @@
-import { PAGE_SIZE, SORT_LABELS } from '../config.js';
-import { createJobCard } from '../components/jobCard.js';
-import { createEmpty, describeSource } from '../components/status.js';
-import { getSaved } from '../state/saved.js';
-import { debounce } from '../utils/debounce.js';
-import { el, qs } from '../utils/dom.js';
-import { collectOptions, filterJobs, sortJobs } from '../utils/filter.js';
-import { pluralUk } from '../utils/format.js';
-import { DEFAULT_FILTERS, parseFilters, serializeFilters } from '../utils/url-state.js';
-import { loadIntoContainer } from './shared.js';
+import { PAGE_SIZE, SORT_LABELS } from '../config';
+import { createJobCard } from '../components/jobCard';
+import { createEmpty, describeSource } from '../components/status';
+import { getSaved } from '../state/saved';
+import type { Filters, GeoMode, SortKey } from '../types/filters';
+import type { Job } from '../types/job';
+import { debounce } from '../utils/debounce';
+import { el, qs } from '../utils/dom';
+import { collectOptions, filterJobs, sortJobs } from '../utils/filter';
+import { pluralUk } from '../utils/format';
+import { DEFAULT_FILTERS, parseFilters, serializeFilters } from '../utils/url-state';
+import { loadIntoContainer } from './shared';
 
-function getUi() {
+interface Ui {
+  title: HTMLElement;
+  panel: HTMLDetailsElement;
+  form: HTMLFormElement;
+  query: HTMLInputElement;
+  level: HTMLSelectElement;
+  type: HTMLSelectElement;
+  salaryOnly: HTMLInputElement;
+  savedOnly: HTMLInputElement;
+  sort: HTMLSelectElement;
+  reset: HTMLButtonElement;
+  status: HTMLElement;
+  results: HTMLElement;
+  loadMore: HTMLButtonElement;
+  note: HTMLElement;
+}
+
+function getUi(): Ui {
   return {
     title: qs('#page-title'),
     panel: qs('#filters-panel'),
@@ -28,7 +47,12 @@ function getUi() {
   };
 }
 
-function fillSelect(select, allLabel, values, selected) {
+function fillSelect(
+  select: HTMLSelectElement,
+  allLabel: string,
+  values: readonly string[],
+  selected: string,
+): void {
   select.replaceChildren(
     el('option', { value: '' }, allLabel),
     ...values.map((value) => el('option', { value }, value)),
@@ -36,38 +60,41 @@ function fillSelect(select, allLabel, values, selected) {
   select.value = selected;
 }
 
-function isGeoMode(value) {
+function isGeoMode(value: string): value is GeoMode {
   return value === 'all' || value === 'ua' || value === 'europe' || value === 'north-america';
 }
 
-function isSortKey(value) {
+function isSortKey(value: string): value is SortKey {
   return Object.hasOwn(SORT_LABELS, value);
 }
 
-export async function initJobsPage() {
+export async function initJobsPage(): Promise<void> {
   const ui = getUi();
-  let filters = parseFilters(window.location.search);
-  let jobs = [];
+  let filters: Filters = parseFilters(window.location.search);
+  let jobs: Job[] = [];
   let visible = PAGE_SIZE;
 
   ui.sort.replaceChildren(
-    ...Object.keys(SORT_LABELS).map((key) => el('option', { value: key }, SORT_LABELS[key])),
+    ...(Object.keys(SORT_LABELS) as SortKey[]).map((key) =>
+      el('option', { value: key }, SORT_LABELS[key]),
+    ),
   );
 
   ui.panel.open = window.matchMedia?.('(min-width: 56rem)').matches ?? true;
 
-  const writeControls = () => {
+  const writeControls = (): void => {
     ui.query.value = filters.query;
     ui.salaryOnly.checked = filters.salaryOnly;
     ui.savedOnly.checked = filters.savedOnly;
     ui.sort.value = filters.sort;
-    ui.form.querySelectorAll('input[name="geo"]').forEach((radio) => {
+    ui.form.querySelectorAll<HTMLInputElement>('input[name="geo"]').forEach((radio) => {
       radio.checked = radio.value === filters.geo;
     });
   };
 
-  const readControls = () => {
-    const selectedGeo = ui.form.querySelector('input[name="geo"]:checked')?.value ?? '';
+  const readControls = (): Filters => {
+    const selectedGeo =
+      ui.form.querySelector<HTMLInputElement>('input[name="geo"]:checked')?.value ?? '';
     const selectedSort = ui.sort.value;
     return {
       query: ui.query.value.trim(),
@@ -85,24 +112,24 @@ export async function initJobsPage() {
     };
   };
 
-  const syncUrl = () => {
+  const syncUrl = (): void => {
     const search = serializeFilters(filters);
     window.history.replaceState(null, '', search ? `?${search}` : window.location.pathname);
   };
 
-  const syncPageMode = () => {
+  const syncPageMode = (): void => {
     ui.title.textContent = filters.savedOnly ? 'Збережені вакансії' : 'Каталог вакансій';
     document.title = `${ui.title.textContent} — FindYourJob`;
-    document.querySelectorAll('.nav-list a').forEach((link) => {
+    document.querySelectorAll<HTMLAnchorElement>('.nav-list a').forEach((link) => {
       link.removeAttribute('aria-current');
     });
-    const currentLink = document.querySelector(
+    const currentLink = document.querySelector<HTMLAnchorElement>(
       filters.savedOnly ? '.nav-list a[data-nav="saved"]' : '.nav-list a[href="jobs.html"]',
     );
     currentLink?.setAttribute('aria-current', 'page');
   };
 
-  const render = () => {
+  const render = (): void => {
     syncPageMode();
     const savedIds = getSaved();
     const matches = sortJobs(filterJobs(jobs, filters, savedIds), filters.sort, filters.query);
@@ -129,6 +156,7 @@ export async function initJobsPage() {
       ...matches.slice(0, visible).map((job) =>
         createJobCard(job, {
           onSaveChange: () => {
+            // У режимі «лише збережені» картка зникає — повертаємо фокус у список.
             if (filters.savedOnly) {
               render();
               ui.results.focus();
@@ -143,14 +171,14 @@ export async function initJobsPage() {
     ui.loadMore.textContent = `Показати ще ${Math.min(PAGE_SIZE, Math.max(rest, 0))} (залишилось ${Math.max(rest, 0)})`;
   };
 
-  const applyFilters = () => {
+  const applyFilters = (): void => {
     filters = readControls();
     visible = PAGE_SIZE;
     syncUrl();
     render();
   };
 
-  function resetFilters() {
+  function resetFilters(): void {
     filters = { ...DEFAULT_FILTERS };
     writeControls();
     ui.level.value = '';
@@ -178,7 +206,7 @@ export async function initJobsPage() {
   syncPageMode();
   writeControls();
 
-  const load = async (force = false) => {
+  const load = async (force = false): Promise<void> => {
     ui.loadMore.hidden = true;
     const result = await loadIntoContainer(ui.results, {
       skeletons: 6,
