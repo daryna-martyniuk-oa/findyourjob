@@ -6,9 +6,15 @@
     <title>FindYourJob — пошук роботи</title>
     <meta
       name="description"
-      content="FindYourJob — сайт для пошуку роботи, який зараз у розробці. Переглядайте віддалені IT-вакансії."
+      content="FindYourJob — сайт пошуку роботи, який зараз у розробці. Переглядайте вакансії та зберігайте цікаві пропозиції."
     />
     <meta name="color-scheme" content="light dark" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="uk_UA" />
     <meta property="og:title" content="FindYourJob — пошук роботи" />
@@ -16,19 +22,18 @@
       property="og:description"
       content="FindYourJob — сайт пошуку роботи, який зараз у розробці."
     />
-
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./src/styles/main.css" />
     <script>
       try {
         var saved = localStorage.getItem('findyourjob:theme');
-        if (saved === 'light' || saved === 'dark') {
-          document.documentElement.dataset.theme = saved;
-        }
+        if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
       } catch (e) {}
     </script>
+    <script type="module" src="/src/entries/home.ts"></script>
   </head>
   <body>
+    <a class="skip-link" href="#main">Перейти до основного вмісту</a>
     <header class="site-header">
       <div class="container site-header__inner">
         <a class="brand" href="index.html">
@@ -43,9 +48,9 @@
             <li><a href="index.html" aria-current="page">Головна</a></li>
             <li><a href="jobs.html">Вакансії</a></li>
             <li>
-              <a href="jobs.html?saved=1" data-nav="saved">
-                Збережені <span class="count" id="saved-count" hidden>0</span>
-              </a>
+              <a href="jobs.html?saved=1"
+                >Збережені <span class="count" id="saved-count" hidden>0</span></a
+              >
             </li>
           </ul>
         </nav>
@@ -54,7 +59,6 @@
         </button>
       </div>
     </header>
-
     <main id="main" tabindex="-1">
       <section class="hero" aria-labelledby="hero-title">
         <div class="container hero__inner">
@@ -84,7 +88,7 @@
               <button type="submit" class="btn btn--primary">Знайти вакансії</button>
             </form>
             <p id="hero-search-hint" class="field__hint">Можливо, ти шукаєш щось із цього:</p>
-            <div class="quick-filters">
+            <div class="quick-filters" aria-label="Швидкі запити:">
               <button type="button" class="quick-filter" data-query="React">#React</button>
               <button type="button" class="quick-filter" data-query="TypeScript">
                 #TypeScript
@@ -136,77 +140,7 @@
           <h2 id="latest-title">Вакансії</h2>
           <a href="jobs.html">Усі вакансії</a>
         </div>
-        <div id="latest" class="card-grid" aria-busy="true">
-          <article class="job-card" aria-labelledby="job-title-1">
-            <header class="job-card__header">
-              <span class="job-card__logo" aria-hidden="true">GI</span>
-              <div>
-                <h3 class="job-card__title" id="job-title-1">
-                  <a href="job.html">Senior TypeScript Engineer</a>
-                </h3>
-                <p class="job-card__company">Global IT Solutions</p>
-              </div>
-            </header>
-            <ul class="badges" role="list">
-              <li class="badge">Звідусіль</li>
-              <li class="badge">Full-Time</li>
-              <li class="badge">Senior</li>
-            </ul>
-            <p class="job-card__geo">Remote (Worldwide)</p>
-            <p class="job-card__excerpt">
-              Розробка високонавантажених сервісів на TypeScript та Node.js.
-            </p>
-            <div class="job-card__footer">
-              <div class="job-card__facts">
-                <span class="job-card__salary">$4 000 – $6 000 / міс.</span>
-                <time class="job-card__date" datetime="2026-10-14">3 дні тому</time>
-              </div>
-              <button
-                type="button"
-                class="btn btn--save"
-                aria-pressed="false"
-                aria-label="Зберегти вакансію: Senior TypeScript Engineer"
-              >
-                <span class="btn__icon" aria-hidden="true"></span>Зберегти
-              </button>
-            </div>
-          </article>
-
-          <article class="job-card" aria-labelledby="job-title-2">
-            <header class="job-card__header">
-              <span class="job-card__logo" aria-hidden="true">CW</span>
-              <div>
-                <h3 class="job-card__title" id="job-title-2">
-                  <a href="job.html">Frontend React Developer</a>
-                </h3>
-                <p class="job-card__company">Creative Web Studio</p>
-              </div>
-            </header>
-            <ul class="badges" role="list">
-              <li class="badge badge--yes">Доступно з України</li>
-              <li class="badge">Full-Time</li>
-              <li class="badge">Middle</li>
-            </ul>
-            <p class="job-card__geo">Україна (Remote)</p>
-            <p class="job-card__excerpt">
-              Верстка та інтеграція REST API для сучасних вебзастосунків.
-            </p>
-            <div class="job-card__footer">
-              <div class="job-card__facts">
-                <span class="job-card__salary">$2 500 – $3 500 / міс.</span>
-                <time class="job-card__date" datetime="2026-10-12">5 днів тому</time>
-              </div>
-              <button
-                type="button"
-                class="btn btn--save"
-                aria-pressed="false"
-                aria-label="Зберегти вакансію: Frontend React Developer"
-              >
-                <span class="btn__icon" aria-hidden="true"></span>Зберегти
-              </button>
-            </div>
-          </article>
-        </div>
+        <div id="latest" class="card-grid" aria-busy="true"></div>
         <p id="data-note" class="data-note"></p>
       </section>
 
@@ -218,7 +152,6 @@
         </p>
       </section>
     </main>
-
     <footer class="site-footer">
       <div class="container">
         <p>
@@ -229,6 +162,5 @@
         </p>
       </div>
     </footer>
-    <script type="module" src="./src/entries/home.ts"></script>
   </body>
 </html>

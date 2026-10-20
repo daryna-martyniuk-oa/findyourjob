@@ -8,7 +8,13 @@
       name="description"
       content="Шукайте вакансії та фільтруйте пропозиції за посадою, регіоном і типом зайнятості."
     />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="uk_UA" />
     <meta property="og:title" content="Вакансії — FindYourJob" />
@@ -16,17 +22,15 @@
       property="og:description"
       content="Шукайте вакансії та фільтруйте пропозиції за посадою, регіоном і типом зайнятості."
     />
-
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./src/styles/main.css" />
     <script>
       try {
         var saved = localStorage.getItem('findyourjob:theme');
-        if (saved === 'light' || saved === 'dark') {
-          document.documentElement.dataset.theme = saved;
-        }
+        if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
       } catch (e) {}
     </script>
+    <script type="module" src="/src/entries/jobs.ts"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Перейти до основного вмісту</a>
@@ -44,9 +48,9 @@
             <li><a href="index.html">Головна</a></li>
             <li><a href="jobs.html" aria-current="page">Вакансії</a></li>
             <li>
-              <a href="jobs.html?saved=1" data-nav="saved">
-                Збережені <span class="count" id="saved-count" hidden>0</span>
-              </a>
+              <a href="jobs.html?saved=1" data-nav="saved"
+                >Збережені <span class="count" id="saved-count" hidden>0</span></a
+              >
             </li>
           </ul>
         </nav>
@@ -55,7 +59,6 @@
         </button>
       </div>
     </header>
-
     <main id="main" class="container section" tabindex="-1">
       <h1 id="page-title">Каталог вакансій</h1>
 
@@ -75,7 +78,6 @@
               />
               <p id="q-hint" class="field__hint">Усі слова мають знайтися у вакансії.</p>
             </div>
-
             <fieldset class="field" aria-describedby="geo-hint">
               <legend>Регіон</legend>
               <label class="choice"
@@ -96,37 +98,31 @@
                 пошуку
               </p>
             </fieldset>
-
             <div class="field">
               <label for="level">Рівень</label>
               <select id="level" name="level">
                 <option value="">Будь-який рівень</option>
               </select>
             </div>
-
             <div class="field">
               <label for="type">Тип зайнятості</label>
               <select id="type" name="type">
                 <option value="">Будь-який тип</option>
               </select>
             </div>
-
-            <div class="field">
-              <label class="choice">
-                <input id="salary-only" type="checkbox" name="salary" />
-                Лише із вказаною зарплатою
-              </label>
-              <label class="choice">
-                <input id="saved-only" type="checkbox" name="saved" />
-                Лише збережені
-              </label>
+            <div class="field filters__toggles">
+              <label class="choice"
+                ><input id="salary-only" type="checkbox" name="salary" /> Лише із вказаною
+                зарплатою</label
+              >
+              <label class="choice"
+                ><input id="saved-only" type="checkbox" name="saved" /> Лише збережені</label
+              >
             </div>
-
             <div class="field">
               <label for="sort">Сортувати за</label>
               <select id="sort" name="sort"></select>
             </div>
-
             <button id="reset" type="button" class="btn">Скинути фільтри</button>
           </form>
         </details>
@@ -134,16 +130,14 @@
         <section aria-labelledby="results-title">
           <h2 id="results-title" class="visually-hidden">Результати пошуку</h2>
           <p id="results-status" class="results-status" role="status" aria-live="polite"></p>
-
           <div id="results" class="card-grid" tabindex="-1" aria-busy="true"></div>
-          <button type="button" id="load-more" class="btn btn--center" hidden>Показати ще</button>
-          <nav id="pager" class="pagination" aria-label="Пагінація" hidden></nav>
-
+          <div class="load-more">
+            <button id="load-more" type="button" class="btn" hidden>Показати ще</button>
+          </div>
           <p id="data-note" class="data-note"></p>
         </section>
       </div>
     </main>
-
     <footer class="site-footer">
       <div class="container">
         <p>
@@ -154,6 +148,5 @@
         </p>
       </div>
     </footer>
-    <script type="module" src="./src/entries/jobs.ts"></script>
   </body>
 </html>

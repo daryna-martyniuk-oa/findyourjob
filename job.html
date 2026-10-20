@@ -6,21 +6,25 @@
     <title>Вакансія — FindYourJob</title>
     <meta name="description" content="Детальна інформація про вакансію." />
     <meta name="color-scheme" content="light dark" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="uk_UA" />
     <meta property="og:title" content="Вакансія — FindYourJob" />
     <meta property="og:description" content="Детальна інформація про вакансію." />
-
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./src/styles/main.css" />
     <script>
       try {
         var saved = localStorage.getItem('findyourjob:theme');
-        if (saved === 'light' || saved === 'dark') {
-          document.documentElement.dataset.theme = saved;
-        }
+        if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
       } catch (e) {}
     </script>
+    <script type="module" src="/src/entries/job.ts"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Перейти до основного вмісту</a>
@@ -38,9 +42,9 @@
             <li><a href="index.html">Головна</a></li>
             <li><a href="jobs.html">Вакансії</a></li>
             <li>
-              <a href="jobs.html?saved=1" data-nav="saved">
-                Збережені <span class="count" id="saved-count" hidden>0</span>
-              </a>
+              <a href="jobs.html?saved=1"
+                >Збережені <span class="count" id="saved-count" hidden>0</span></a
+              >
             </li>
           </ul>
         </nav>
@@ -49,7 +53,6 @@
         </button>
       </div>
     </header>
-
     <main id="main" class="container section" tabindex="-1">
       <nav class="breadcrumb" aria-label="Навігаційний ланцюжок">
         <ol role="list">
@@ -60,7 +63,6 @@
       </nav>
       <div id="job-root" aria-live="polite" aria-busy="true"></div>
     </main>
-
     <footer class="site-footer">
       <div class="container">
         <p>
@@ -71,6 +73,5 @@
         </p>
       </div>
     </footer>
-    <script type="module" src="./src/entries/job.ts"></script>
   </body>
 </html>
