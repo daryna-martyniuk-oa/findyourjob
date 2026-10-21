@@ -36,4 +36,4 @@ export type LoadResult =
       source: Exclude<DataSource, 'snapshot'>;
       fetchedAt: number;
       isSnapshot: false;
-    };  
+    };
