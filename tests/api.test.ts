@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { writeCache } from '../src/api/cache';
 import { ApiError, buildUrl, loadJobs } from '../src/api/jobicy';
 import { STORAGE_KEYS } from '../src/config';
+import { describeSource } from '../src/components/status';
 import { fixture, makeJob, mockFetchOk } from './helpers';
 
 describe('buildUrl', () => {
@@ -15,7 +16,10 @@ describe('buildUrl', () => {
 
 describe('loadJobs', () => {
   beforeEach(() => localStorage.clear());
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
 
   it('завантажує з мережі, прибирає дублікати між категоріями й кешує', async () => {
     const fetchMock = mockFetchOk();
@@ -47,6 +51,49 @@ describe('loadJobs', () => {
     );
     const result = await loadJobs();
     expect(result.jobs.length).toBeGreaterThan(0);
+  });
+
+  it('при помилці API завантажує локальний snapshot і повертає його повідомлення', async () => {
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.includes('fixtures/jobs.json')) {
+        return new Response(JSON.stringify(fixture), { status: 200 });
+      }
+      throw new TypeError('offline');
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await loadJobs();
+
+    expect(result.source).toBe('snapshot');
+    expect(result.isSnapshot).toBe(true);
+    expect(describeSource(result)).toBe('API тимчасово недоступне — показано локальний знімок');
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+
+  it('у fixture mode завантажує лише snapshot і пояснює режим', async () => {
+    vi.stubEnv('VITE_USE_FIXTURE', 'true');
+    const fetchMock = vi.fn(async (url: string) =>
+      url.includes('fixtures/jobs.json')
+        ? new Response(JSON.stringify(fixture), { status: 200 })
+        : new Response('unexpected API request', { status: 500 }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const result = await loadJobs();
+
+    expect(result.source).toBe('snapshot');
+    expect(result.isSnapshot).toBe(true);
+    expect(describeSource(result)).toBe('Режим розробки: використовуються локальні тестові дані');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain('fixtures/jobs.json');
+  });
+
+  it('для успішної мережі не показує повідомлення про snapshot', async () => {
+    mockFetchOk();
+    const result = await loadJobs({ force: true });
+    expect(result.source).toBe('network');
+    expect(result.isSnapshot).toBe(false);
+    expect(describeSource(result)).not.toContain('знімок');
   });
 
   it('HTTP-помилка без кешу → ApiError(http)', async () => {

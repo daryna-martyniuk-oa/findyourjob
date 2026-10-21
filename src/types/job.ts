@@ -23,8 +23,17 @@ export interface Job {
 
 export type DataSource = 'network' | 'cache' | 'stale-cache' | 'snapshot';
 
-export interface LoadResult {
-  jobs: Job[];
-  source: DataSource;
-  fetchedAt: number;
-}
+export type LoadResult =
+  | {
+      jobs: Job[];
+      source: 'snapshot';
+      fetchedAt: number;
+      isSnapshot: true;
+      message: string;
+    }
+  | {
+      jobs: Job[];
+      source: Exclude<DataSource, 'snapshot'>;
+      fetchedAt: number;
+      isSnapshot: false;
+    };  

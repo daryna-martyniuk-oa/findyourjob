@@ -23,13 +23,13 @@
       content="FindYourJob — сайт пошуку роботи, який зараз у розробці."
     />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./src/styles/main.css" />
     <script>
       try {
         var saved = localStorage.getItem('findyourjob:theme');
         if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
       } catch (e) {}
     </script>
+    <link rel="stylesheet" href="./src/styles/main.css" />
     <script type="module" src="/src/entries/home.ts"></script>
   </head>
   <body>

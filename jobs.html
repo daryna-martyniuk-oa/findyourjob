@@ -23,13 +23,13 @@
       content="Шукайте вакансії та фільтруйте пропозиції за посадою, регіоном і типом зайнятості."
     />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./src/styles/main.css" />
     <script>
       try {
         var saved = localStorage.getItem('findyourjob:theme');
         if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
       } catch (e) {}
     </script>
+    <link rel="stylesheet" href="./src/styles/main.css" />
     <script type="module" src="/src/entries/jobs.ts"></script>
   </head>
   <body>
@@ -131,6 +131,7 @@
           <h2 id="results-title" class="visually-hidden">Результати пошуку</h2>
           <p id="results-status" class="results-status" role="status" aria-live="polite"></p>
           <div id="results" class="card-grid" tabindex="-1" aria-busy="true"></div>
+          <script>window.renderSkeletons?.('#results', 6);</script>
           <div class="load-more">
             <button id="load-more" type="button" class="btn" hidden>Показати ще</button>
           </div>

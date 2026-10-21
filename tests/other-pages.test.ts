@@ -4,7 +4,8 @@ import { initHomePage } from '../src/pages/home';
 import { initJobPage, parseJobId } from '../src/pages/job';
 import { toggleSaved } from '../src/state/saved';
 import { STORAGE_KEYS } from '../src/config';
-import { mockFetchOk, mountPage } from './helpers';
+import { initTheme } from '../src/state/theme';
+import { fixture, mockFetchOk, mountPage } from './helpers';
 
 const q = <T extends HTMLElement>(selector: string): T => document.querySelector<T>(selector)!;
 
@@ -45,6 +46,24 @@ describe('головна сторінка', () => {
     expect(error.textContent).toMatch(/помилку/);
     expect(error.querySelector('h3')?.textContent).toBe('Не вдалося завантажити вакансії');
     expect(error.querySelector('button')?.textContent).toBe('Повторити спробу');
+  });
+
+  it('показує snapshot-повідомлення лише після fallback на fixture', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        if (url.includes('fixtures/jobs.json')) {
+          return new Response(JSON.stringify(fixture), { status: 200 });
+        }
+        throw new TypeError('offline');
+      }),
+    );
+
+    await initHomePage();
+
+    expect(q('#data-note').textContent).toBe(
+      'API тимчасово недоступне — показано локальний знімок',
+    );
   });
 });
 
@@ -115,6 +134,28 @@ describe('спільна шапка', () => {
     expect(localStorage.getItem(STORAGE_KEYS.theme)).toBe('dark');
     button.click();
     expect(document.documentElement.dataset.theme).toBe('light');
+  });
+
+  it('пріоритезує збережену тему та не додає повторні click-обробники', () => {
+    localStorage.setItem(STORAGE_KEYS.theme, 'light');
+    document.documentElement.dataset.theme = 'dark';
+
+    initTheme();
+    initTheme();
+
+    const button = q<HTMLButtonElement>('#theme-toggle');
+    expect(document.documentElement.dataset.theme).toBe('light');
+    expect(button.getAttribute('aria-pressed')).toBe('false');
+
+    button.click();
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(localStorage.getItem(STORAGE_KEYS.theme)).toBe('dark');
+    expect(button.getAttribute('aria-pressed')).toBe('true');
+
+    mountPage('jobs.html');
+    initLayout();
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(q<HTMLButtonElement>('#theme-toggle').getAttribute('aria-pressed')).toBe('true');
   });
 
   it('лічильник збережених оновлюється одразу після зміни', () => {

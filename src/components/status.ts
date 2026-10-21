@@ -42,6 +42,8 @@ export function createEmpty(title: string, hint: string, action?: HTMLElement): 
 }
 
 export function describeSource(result: LoadResult, now: Date = new Date()): string {
+  if (result.isSnapshot) return result.message ?? '';
+
   const when = formatRelative(new Date(result.fetchedAt).toISOString(), now);
   switch (result.source) {
     case 'network':
@@ -50,7 +52,5 @@ export function describeSource(result: LoadResult, now: Date = new Date()): stri
       return `Дані з локального кешу (оновлено ${when}). Кеш діє 1 годину, як рекомендує Jobicy.`;
     case 'stale-cache':
       return `Не вдалося оновити дані — показано збережену копію (${when}).`;
-    case 'snapshot':
-      return 'API тимчасово недоступне — показано локальний знімок вакансій.';
   }
 }

@@ -37,6 +37,15 @@ export function fixtureUrl(): string {
   return `${import.meta.env.BASE_URL}fixtures/jobs.json`;
 }
 
+const FIXTURE_MODE_MESSAGE = 'Режим розробки: використовуються локальні тестові дані';
+const FIXTURE_FALLBACK_MESSAGE = 'API тимчасово недоступне — показано локальний знімок';
+
+async function loadSnapshot(message: string, signal?: AbortSignal): Promise<LoadResult> {
+  const jobs = extractJobs(await fetchJson(fixtureUrl(), signal));
+  logger.debug('Fixture snapshot:', jobs.length, 'jobs');
+  return { jobs, source: 'snapshot', fetchedAt: Date.now(), isSnapshot: true, message };
+}
+
 async function fetchJson(url: string, signal?: AbortSignal): Promise<unknown> {
   const controller = new AbortController();
   let timedOut = false;
@@ -102,15 +111,13 @@ export interface LoadOptions {
 
 export async function loadJobs(options: LoadOptions = {}): Promise<LoadResult> {
   if (useFixture()) {
-    const jobs = extractJobs(await fetchJson(fixtureUrl(), options.signal));
-    logger.debug('Fixture mode:', jobs.length, 'jobs');
-    return { jobs, source: 'snapshot', fetchedAt: Date.now() };
+    return loadSnapshot(FIXTURE_MODE_MESSAGE, options.signal);
   }
 
   const cached = readCache<Job[]>(STORAGE_KEYS.jobs);
   if (!options.force && cached && isFresh(cached, CACHE_TTL_MS)) {
     logger.debug('Cache hit:', cached.data.length, 'jobs');
-    return { jobs: cached.data, source: 'cache', fetchedAt: cached.savedAt };
+    return { jobs: cached.data, source: 'cache', fetchedAt: cached.savedAt, isSnapshot: false };
   }
 
   try {
@@ -122,12 +129,27 @@ export async function loadJobs(options: LoadOptions = {}): Promise<LoadResult> {
       );
     }
     logger.debug('Network:', jobs.length, 'jobs');
-    return { jobs, source: 'network', fetchedAt: Date.now() };
+    return { jobs, source: 'network', fetchedAt: Date.now(), isSnapshot: false };
   } catch (error) {
     if (options.signal?.aborted) throw error;
+
+    try {
+      const snapshot = await loadSnapshot(FIXTURE_FALLBACK_MESSAGE, options.signal);
+      logger.warn('Jobicy API unavailable — using local snapshot', error);
+      return snapshot;
+    } catch (fixtureError) {
+      if (options.signal?.aborted) throw fixtureError;
+      logger.warn('Local fixture fallback failed', fixtureError);
+    }
+
     if (cached) {
       logger.warn('Мережа недоступна — використовуємо застарілий кеш', error);
-      return { jobs: cached.data, source: 'stale-cache', fetchedAt: cached.savedAt };
+      return {
+        jobs: cached.data,
+        source: 'stale-cache',
+        fetchedAt: cached.savedAt,
+        isSnapshot: false,
+      };
     }
     throw error;
   }

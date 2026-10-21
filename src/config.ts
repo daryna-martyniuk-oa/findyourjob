@@ -12,7 +12,7 @@ export const SORT_LABELS: Record<SortKey, string> = {
 };
 
 export const STORAGE_KEYS = {
-  jobs: 'remoteit:jobs:v1',
-  saved: 'remoteit:saved',
-  theme: 'remoteit:theme',
+  jobs: 'findyourjob:jobs:v1',
+  saved: 'findyourjob:saved',
+  theme: 'findyourjob:theme',
 } as const;
